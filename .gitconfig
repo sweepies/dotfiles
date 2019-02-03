@@ -1,0 +1,35 @@
+[user]
+  email = sweepy@sweepy.pw
+  name = Sweepyoface
+  signingkey = ACBF9C05
+
+[alias]
+  amend = commit --amend
+  b = branch
+  co = checkout
+  cp = cherry-pick
+  d = diff
+  ds = diff --staged
+  r = rebase
+  ra = rebase --abort
+  rc = rebase --continue
+  ri = rebase --interactive
+  rs = rebase --skip
+
+[core]
+  editor = nano
+
+[commit]
+  gpgsign = true
+
+[url "git@github.com:"]
+  insteadOf = "gh:"
+  pushInsteadOf = "gh:"
+
+[url "git@gitlab.com:"]
+  insteadOf = "gl:"
+  pushInsteadOf = "gl:"
+
+[url "git@gist.github.com:"]
+  insteadOf = "gist:"
+  pushInsteadOf = "gist:"
