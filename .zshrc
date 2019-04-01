@@ -98,3 +98,5 @@ source $ZSH/oh-my-zsh.sh
 alias docker-restart="docker-compose restart"
 alias docker-rb="docker-compose down && docker-compose up -d"
 alias docker-rb-hard="docker-compose down && docker-compose up -d --build"
+
+export PATH="$PATH:$(yarn global bin):$HOME/bin"
