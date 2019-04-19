@@ -17,7 +17,7 @@ ZSH_THEME="lukerandall"
 # ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
 
 # Uncomment the following line to use case-sensitive completion.
-# CASE_SENSITIVE="true"
+CASE_SENSITIVE="true"
 
 # Uncomment the following line to use hyphen-insensitive completion.
 # Case-sensitive completion must be off. _ and - will be interchangeable.
@@ -68,6 +68,9 @@ source $ZSH/oh-my-zsh.sh
 
 # User configuration
 
+export PATH="$PATH:$HOME/bin:/snap/bin:$(yarn global bin):$HOME/.local/bin:$HOME/.rvm/bin"
+export EDITOR="nano"
+
 # export MANPATH="/usr/local/man:$MANPATH"
 
 # You may need to manually set your language environment
@@ -99,4 +102,5 @@ alias docker-restart="docker-compose restart"
 alias docker-rb="docker-compose down && docker-compose up -d"
 alias docker-rb-hard="docker-compose down && docker-compose up -d --build"
 
-export PATH="$PATH:$(yarn global bin):$HOME/bin"
+# added by travis gem
+[ -f /home/sweepyoface/.travis/travis.sh ] && source /home/sweepyoface/.travis/travis.sh
