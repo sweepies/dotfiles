@@ -17,7 +17,7 @@ ZSH_THEME="lukerandall"
 # ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
 
 # Uncomment the following line to use case-sensitive completion.
-CASE_SENSITIVE="true"
+# CASE_SENSITIVE="true"
 
 # Uncomment the following line to use hyphen-insensitive completion.
 # Case-sensitive completion must be off. _ and - will be interchangeable.
@@ -52,7 +52,8 @@ CASE_SENSITIVE="true"
 # "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
 # or set a custom format using the strftime function format specifications,
 # see 'man strftime' for details.
-# HIST_STAMPS="mm/dd/yyyy"
+HIST_STAMPS="yyyy-mm-dd"
+HISTSIZE=200
 
 # Would you like to use another custom folder than $ZSH/custom?
 # ZSH_CUSTOM=/path/to/new-custom-folder
@@ -67,9 +68,6 @@ plugins=(git zsh-nvm)
 source $ZSH/oh-my-zsh.sh
 
 # User configuration
-
-export PATH="$PATH:$HOME/bin:/snap/bin:$(yarn global bin):$HOME/.local/bin:$HOME/.rvm/bin"
-export EDITOR="nano"
 
 # export MANPATH="/usr/local/man:$MANPATH"
 
@@ -101,6 +99,24 @@ export EDITOR="nano"
 alias docker-restart="docker-compose restart"
 alias docker-rb="docker-compose down && docker-compose up -d"
 alias docker-rb-hard="docker-compose down && docker-compose up -d --build"
+alias ls="ls --almost-all"
 
-# added by travis gem
-[ -f /home/sweepyoface/.travis/travis.sh ] && source /home/sweepyoface/.travis/travis.sh
+export PATH="$PATH:$HOME/bin:/snap/bin:$HOME/.yarn/bin:$HOME/.local/bin:$HOME/.rvm/bin"
+export EDITOR="nano"
+
+fuck () {
+    TF_PYTHONIOENCODING=$PYTHONIOENCODING;
+    export TF_SHELL=zsh;
+    export TF_ALIAS=fuck;
+    TF_SHELL_ALIASES=$(alias);
+    export TF_SHELL_ALIASES;
+    TF_HISTORY="$(fc -ln -10)";
+    export TF_HISTORY;
+    export PYTHONIOENCODING=utf-8;
+    TF_CMD=$(
+        thefuck THEFUCK_ARGUMENT_PLACEHOLDER $@
+    ) && eval $TF_CMD;
+    unset TF_HISTORY;
+    export PYTHONIOENCODING=$TF_PYTHONIOENCODING;
+    test -n "$TF_CMD" && print -s $TF_CMD
+}
