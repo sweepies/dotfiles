@@ -96,27 +96,17 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 # GoLang
-alias docker-restart="docker-compose restart"
-alias docker-rb="docker-compose down && docker-compose up -d"
-alias docker-rb-hard="docker-compose down && docker-compose up -d --build"
+
 alias ls="ls --almost-all"
+alias rand="node -e \"const EOL = require('os').EOL; require('crypto').randomBytes(parseInt(process.argv[2]), (_, buff) => process.stdout.write(buff.toString(process.argv[1]) + EOL));\" --"
 
 export PATH="$PATH:$HOME/bin:/snap/bin:$HOME/.yarn/bin:$HOME/.local/bin:$HOME/.rvm/bin"
 export EDITOR="nano"
 
-fuck () {
-    TF_PYTHONIOENCODING=$PYTHONIOENCODING;
-    export TF_SHELL=zsh;
-    export TF_ALIAS=fuck;
-    TF_SHELL_ALIASES=$(alias);
-    export TF_SHELL_ALIASES;
-    TF_HISTORY="$(fc -ln -10)";
-    export TF_HISTORY;
-    export PYTHONIOENCODING=utf-8;
-    TF_CMD=$(
-        thefuck THEFUCK_ARGUMENT_PLACEHOLDER $@
-    ) && eval $TF_CMD;
-    unset TF_HISTORY;
-    export PYTHONIOENCODING=$TF_PYTHONIOENCODING;
-    test -n "$TF_CMD" && print -s $TF_CMD
-}
+eval $(thefuck --alias)
+
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+export SDKMAN_DIR="/home/sweepyoface/.sdkman"
+[[ -s "/home/sweepyoface/.sdkman/bin/sdkman-init.sh" ]] && source "/home/sweepyoface/.sdkman/bin/sdkman-init.sh"
+
+export N_PREFIX="$HOME/n"; [[ :$PATH: == *":$N_PREFIX/bin:"* ]] || PATH+=":$N_PREFIX/bin"  # Added by n-install (see http://git.io/n-install-repo).
