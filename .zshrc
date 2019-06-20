@@ -103,6 +103,7 @@ rand() {
     case "$1" in
         "hex") python -c "import os, binascii, sys; print binascii.b2a_hex(os.urandom(int(sys.argv[1])))" "$2" ;;
         "base64" | "b64") python -c "import os, base64, sys; print base64.b64encode(os.urandom(int(sys.argv[1])))" "$2" ;;
+        *) echo "invalid encoding: '$1'"
     esac
 }
 
