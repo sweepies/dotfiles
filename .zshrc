@@ -98,7 +98,13 @@ source $ZSH/oh-my-zsh.sh
 # GoLang
 
 alias ls="ls --almost-all"
-alias rand="node -e \"const EOL = require('os').EOL; require('crypto').randomBytes(parseInt(process.argv[2]), (_, buff) => process.stdout.write(buff.toString(process.argv[1]) + EOL));\" --"
+
+rand() {
+    case "$1" in
+        "hex") python -c "import os, binascii, sys; print binascii.b2a_hex(os.urandom(int(sys.argv[1])))" "$2" ;;
+        "base64" | "b64") python -c "import os, base64, sys; print base64.b64encode(os.urandom(int(sys.argv[1])))" "$2" ;;
+    esac
+}
 
 export PATH="$PATH:$HOME/bin:/snap/bin:$HOME/.yarn/bin:$HOME/.local/bin:$HOME/.rvm/bin"
 export EDITOR="nano"
