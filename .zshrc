@@ -100,11 +100,40 @@ source $ZSH/oh-my-zsh.sh
 alias ls="ls --almost-all"
 
 rand() {
+    types=("hex" "base64" "b64" "chars" "c")
+
+    if [[ -z $1 ]]; then
+        cat << EOF
+Usage: $0 TYPE AMOUNT
+Generate random data
+
+AMOUNT is in bytes.
+
+Possible types:
+  hex
+  base64, b64
+  chars, c
+EOF
+        return 126
+    fi
+
+    if ! [[ "${types[*]}" =~ $1 ]]; then
+        echo "$0: invalid type: '$1'"
+        return 1
+    fi
+
+    if ! [[ $2 =~ ^[0-9]+$ ]]; then
+        echo "$0: invalid number: '$2'"
+        return 1
+    fi
+
     case "$1" in
-        "hex") python -c "import os, binascii, sys; print binascii.b2a_hex(os.urandom(int(sys.argv[1])))" "$2" ;;
-        "base64" | "b64") python -c "import os, base64, sys; print base64.b64encode(os.urandom(int(sys.argv[1])))" "$2" ;;
-        *) echo "invalid encoding: '$1'"
+        "hex") data=$(head -c "$2" < /dev/urandom | xxd -p) ;;
+        "base64" | "b64") data=$(head -c "$2" < /dev/urandom | base64) ;;
+        "chars" | "c") data=$(tr -dc a-zA-Z0-9 < /dev/urandom | head -c "$2") ;;
     esac
+
+    printf "%s\n" "$data"
 }
 
 export PATH="$PATH:$HOME/bin:/snap/bin:$HOME/.yarn/bin:$HOME/.local/bin:$HOME/.rvm/bin"
