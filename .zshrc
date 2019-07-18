@@ -97,7 +97,7 @@ source $ZSH/oh-my-zsh.sh
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 # GoLang
 
-alias ls="ls --almost-all"
+alias ls="ls --color=auto --almost-all"
 
 rand() {
     types=("hex" "base64" "b64" "chars" "c")
@@ -140,9 +140,3 @@ export PATH="$PATH:$HOME/bin:/snap/bin:$HOME/.yarn/bin:$HOME/.local/bin:$HOME/.r
 export EDITOR="nano"
 
 eval $(thefuck --alias)
-
-#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-export SDKMAN_DIR="/home/sweepyoface/.sdkman"
-[[ -s "/home/sweepyoface/.sdkman/bin/sdkman-init.sh" ]] && source "/home/sweepyoface/.sdkman/bin/sdkman-init.sh"
-
-export N_PREFIX="$HOME/n"; [[ :$PATH: == *":$N_PREFIX/bin:"* ]] || PATH+=":$N_PREFIX/bin"  # Added by n-install (see http://git.io/n-install-repo).
