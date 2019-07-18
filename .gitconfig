@@ -1,7 +1,7 @@
 [user]
-  email = sweepy@sweepy.pw
+  email = sweepyoface@gmail.com
   name = Sweepyoface
-  signingkey = ACBF9C05
+  signingkey = 3A8457B5
 
 [alias]
   amend = commit --amend
