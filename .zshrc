@@ -141,3 +141,5 @@ explorer() {
 alias ls="ls -A --color=auto"
 
 export EDITOR="nano"
+export PATH="$PATH:$HOME/.local/bin"
+export DOCKER_HOST=tcp://localhost:2375
