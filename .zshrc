@@ -141,5 +141,13 @@ explorer() {
 alias ls="ls -A --color=auto"
 
 export EDITOR="nano"
-export PATH="$PATH:$HOME/.local/bin"
+
 export DOCKER_HOST=tcp://localhost:2375
+
+export PATH="$PATH:$HOME/.local/bin"
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/home/sweepy/google-cloud-sdk/path.zsh.inc' ]; then . '/home/sweepy/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/home/sweepy/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/sweepy/google-cloud-sdk/completion.zsh.inc'; fi
