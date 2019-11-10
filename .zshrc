@@ -142,6 +142,7 @@ alias ls="ls -A --color=auto"
 
 export EDITOR="nano"
 
+export GPG_TTY=$(tty)
 export DOCKER_HOST=tcp://localhost:2375
 
 export PATH="$PATH:$HOME/.local/bin"
