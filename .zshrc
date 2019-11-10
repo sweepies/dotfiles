@@ -97,8 +97,6 @@ source $ZSH/oh-my-zsh.sh
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 # GoLang
 
-alias ls="ls -A --color=auto"
-
 rand() {
     types=("hex" "base64" "b64" "chars" "c")
 
@@ -136,7 +134,10 @@ EOF
     printf "%s\n" "$data"
 }
 
-export PATH="$PATH:$HOME/bin:/snap/bin:$HOME/.yarn/bin:$HOME/.local/bin:$HOME/.rvm/bin"
-export EDITOR="nano"
+explorer() {
+    explorer.exe $(wslpath -w $1)
+}
 
-eval $(thefuck --alias)
+alias ls="ls -A --color=auto"
+
+export EDITOR="nano"
