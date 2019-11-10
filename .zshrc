@@ -97,7 +97,7 @@ source $ZSH/oh-my-zsh.sh
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 # GoLang
 
-alias ls="ls --color=auto --almost-all"
+alias ls="ls -A --color=auto"
 
 rand() {
     types=("hex" "base64" "b64" "chars" "c")
