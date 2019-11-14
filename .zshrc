@@ -1,5 +1,6 @@
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
+export PATH="$PATH:$HOME/.local/bin"
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
@@ -144,8 +145,6 @@ export EDITOR="nano"
 
 export GPG_TTY=$(tty)
 export DOCKER_HOST=tcp://localhost:2375
-
-export PATH="$PATH:$HOME/.local/bin"
 
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/home/sweepy/google-cloud-sdk/path.zsh.inc' ]; then . '/home/sweepy/google-cloud-sdk/path.zsh.inc'; fi
