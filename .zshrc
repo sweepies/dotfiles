@@ -97,6 +97,7 @@ fi
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 # GoLang
+alias ls="ls -A"
 
 rand() {
     types=("hex" "base64" "b64" "chars" "c")
@@ -138,8 +139,6 @@ EOF
 explorer() {
     explorer.exe $(wslpath -w $1)
 }
-
-alias ls="ls -A --color=auto"
 
 export GPG_TTY=$(tty)
 export DOCKER_HOST=tcp://localhost:2375
