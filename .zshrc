@@ -99,6 +99,8 @@ fi
 # GoLang
 alias ls="ls -A"
 
+eval `keychain --eval --agents gpg,ssh id_ed25519 3A8457B5`
+
 rand() {
     types=("hex" "base64" "b64" "chars" "c")
 
