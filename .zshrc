@@ -137,6 +137,11 @@ EOF
 }
 
 explorer() {
+    if [[ -z $1 ]]; then
+        cwd=$(pwd)
+        explorer.exe $(wslpath -w $cwd)
+        return 0
+    fi
     explorer.exe $(wslpath -w $1)
 }
 
