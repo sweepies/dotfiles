@@ -99,8 +99,20 @@ fi
 # GoLang
 alias ls="ls -A"
 
-eval `keychain --eval --agents gpg,ssh id_ed25519 3A8457B5`
+# init keychain if on local machine
+if [[ ! -n $SSH_CONNECTION ]]; then
+    eval `keychain --eval --agents gpg,ssh id_ed25519 3A8457B5`
+fi
 
+export GPG_TTY=$(tty)
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/home/sweepy/google-cloud-sdk/path.zsh.inc' ]; then . '/home/sweepy/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/home/sweepy/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/sweepy/google-cloud-sdk/completion.zsh.inc'; fi
+
+### functions ###
 rand() {
     types=("hex" "base64" "b64" "chars" "c")
 
@@ -138,20 +150,17 @@ EOF
     printf "%s\n" "$data"
 }
 
-explorer() {
-    if [[ -z $1 ]]; then
-        cwd=$(pwd)
-        explorer.exe $(wslpath -w $cwd)
-        return 0
-    fi
-    explorer.exe $(wslpath -w $1)
-}
+# WSL specific
+set -e
+if grep -qE "(Microsoft|WSL)" /proc/version &> /dev/null ; then
+    explorer() {
+        if [[ -z $1 ]]; then
+            cwd=$(pwd)
+            explorer.exe $(wslpath -w $cwd)
+            return 0
+        fi
+        explorer.exe $(wslpath -w $1)
+    }
 
-export GPG_TTY=$(tty)
-export DOCKER_HOST=tcp://localhost:2375
-
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/home/sweepy/google-cloud-sdk/path.zsh.inc' ]; then . '/home/sweepy/google-cloud-sdk/path.zsh.inc'; fi
-
-# The next line enables shell command completion for gcloud.
-if [ -f '/home/sweepy/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/sweepy/google-cloud-sdk/completion.zsh.inc'; fi
+    export DOCKER_HOST=tcp://localhost:2375
+fi
