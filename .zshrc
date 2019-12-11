@@ -1,3 +1,6 @@
+# depends on antibody, opportunistic extras:
+# linuxbrew, vscode, keychain, hub
+
 source <(antibody init)
 
 antibody bundle <<EOBUNDLES
@@ -20,16 +23,33 @@ zsh-users/zsh-completions
 zsh-users/zsh-autosuggestions
 EOBUNDLES
 
-export GPG_TTY=$(tty)
+if [[ -d "/home/linuxbrew" ]]; then
+    # `brew shellenv`
+    export HOMEBREW_PREFIX="/home/linuxbrew/.linuxbrew"
+    export HOMEBREW_CELLAR="/home/linuxbrew/.linuxbrew/Cellar"
+    export HOMEBREW_REPOSITORY="/home/linuxbrew/.linuxbrew/Homebrew"
+    export PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin${PATH+:$PATH}"
+    export MANPATH="/home/linuxbrew/.linuxbrew/share/man${MANPATH+:$MANPATH}:"
+    export INFOPATH="/home/linuxbrew/.linuxbrew/share/info${INFOPATH+:$INFOPATH}"
+fi
 
 if [[ -n $SSH_CONNECTION ]]; then
     export EDITOR='nano'
 else
-    export EDITOR='code'
-    eval `keychain --eval --agents gpg,ssh id_ed25519 3A8457B5`
+    if type code &> /dev/null; then
+        export EDITOR='code'
+    fi
+    if type keychain &> /dev/null; then
+        eval "$(keychain --eval --agents gpg,ssh id_ed25519 3A8457B5)"
+    fi
 fi
 
 alias ls="ls -A"
+
+if type hub &> /dev/null; then
+    # `hub alias -s`
+    alias git=hub
+fi
 
 ### functions ###
 rand() {
@@ -70,14 +90,14 @@ EOF
 }
 
 # WSL specific
-if grep -qE "(Microsoft|WSL)" /proc/version &> /dev/null ; then
+if grep -qE "(Microsoft|WSL)" /proc/version &> /dev/null; then
     explorer() {
         if [[ -z $1 ]]; then
             cwd=$(pwd)
-            explorer.exe $(wslpath -w $cwd)
+            explorer.exe $(wslpath -w "$cwd")
             return 0
         fi
-        explorer.exe $(wslpath -w $1)
+        explorer.exe $(wslpath -w "$1")
     }
 
     export DOCKER_HOST=tcp://localhost:2375
