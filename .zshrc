@@ -51,6 +51,8 @@ if type hub &> /dev/null; then
     alias git=hub
 fi
 
+export CLOUDSDK_PYTHON="python3"
+
 ### functions ###
 rand() {
     types=("hex" "base64" "b64" "chars" "c")
