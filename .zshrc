@@ -101,4 +101,8 @@ if grep -qE "(Microsoft|WSL)" /proc/version &> /dev/null; then
     }
 
     export DOCKER_HOST=tcp://localhost:2375
+
+    if [[ -d "/etc/update-motd.d/wsl" ]]; then
+        sudo run-parts /etc/update-motd.d/wsl
+    fi
 fi
