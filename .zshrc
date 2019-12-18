@@ -1,5 +1,6 @@
 # depends on antibody, opportunistic extras:
 # linuxbrew, vscode, keychain, hub
+FPATH="/home/linuxbrew/.linuxbrew/share/zsh/site-functions:$FPATH"
 
 source <(antibody init)
 
