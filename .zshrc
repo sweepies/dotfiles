@@ -1,28 +1,37 @@
-# depends on antibody, opportunistic extras:
-# linuxbrew, vscode, keychain, hub
+# depends on zplugin, opportunistic extras:
+# linuxbrew, vscode, keychain, hub, gcloud, httpie, docker, dotenv
+
 FPATH="/home/linuxbrew/.linuxbrew/share/zsh/site-functions:$FPATH"
 
-source <(antibody init)
+### Added by Zplugin's installer
+source "$HOME/.zplugin/bin/zplugin.zsh"
+autoload -Uz _zplugin
+(( ${+_comps} )) && _comps[zplugin]=_zplugin
+### End of Zplugin installer's chunk
 
-antibody bundle <<EOBUNDLES
-robbyrussell/oh-my-zsh path:plugins/git
-robbyrussell/oh-my-zsh path:plugins/docker
-robbyrussell/oh-my-zsh path:plugins/docker-compose
-robbyrussell/oh-my-zsh path:plugins/dotenv
-robbyrussell/oh-my-zsh path:plugins/command-not-found
-robbyrussell/oh-my-zsh path:plugins/extract
-robbyrussell/oh-my-zsh path:plugins/colored-man-pages
-robbyrussell/oh-my-zsh path:plugins/gcloud
-robbyrussell/oh-my-zsh path:plugins/github
-robbyrussell/oh-my-zsh path:plugins/httpie
-robbyrussell/oh-my-zsh path:plugins/npm
-robbyrussell/oh-my-zsh path:plugins/gcloud
-robbyrussell/oh-my-zsh path:lib
-robbyrussell/oh-my-zsh path:themes/lukerandall.zsh-theme
-zsh-users/zsh-syntax-highlighting
-zsh-users/zsh-completions
-zsh-users/zsh-autosuggestions
-EOBUNDLES
+zplugin ice depth"1" multisrc="lib/*.zsh" pick"/dev/null"
+zplugin light robbyrussell/oh-my-zsh
+
+zplugin snippet OMZ::themes/lukerandall.zsh-theme
+
+zplugin light zdharma/fast-syntax-highlighting
+zplugin light zsh-users/zsh-completions
+zplugin light zsh-users/zsh-autosuggestions
+
+zplugin ice as"completion"
+zplugin snippet OMZ::plugins/docker/_docker
+
+zplugin ice as"completion"
+zplugin snippet OMZ::plugins/httpie/_httpie
+
+plugins=("git" "docker-compose" "dotenv" "command-not-found"
+    "extract" "colored-man-pages" "gcloud" "github" "npm")
+
+for p in "${plugins[@]}"; do
+   zplugin snippet OMZ::plugins/"$p"/"$p".plugin.zsh
+done
+
+compinit
 
 if [[ -d "/home/linuxbrew" ]]; then
     # `brew shellenv`
