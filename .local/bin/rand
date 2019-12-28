@@ -1,0 +1,37 @@
+#!/usr/bin/env sh
+
+
+types=("hex" "base64" "b64" "chars" "c")
+
+if [[ -z $1 ]]; then
+    cat << EOF
+Usage: $0 TYPE AMOUNT
+Generate random data
+
+AMOUNT is in bytes.
+
+Possible types:
+  hex
+  base64, b64
+  chars, c
+EOF
+    exit 126
+fi
+
+if ! [[ "${types[*]}" =~ $1 ]]; then
+    echo "$0: invalid type: '$1'"
+    exit 1
+fi
+
+if ! [[ $2 =~ ^[0-9]+$ ]]; then
+    echo "$0: invalid number: '$2'"
+    exit 1
+fi
+
+case "$1" in
+    "hex") data=$(head --bytes "$2" < /dev/urandom | xxd -plain) ;;
+    "base64" | "b64") data=$(head --bytes "$2" < /dev/urandom | base64) ;;
+    "chars" | "c") data=$(tr --complement --delete a-zA-Z0-9 < /dev/urandom | head --bytes "$2") ;;
+esac
+
+printf "%s\n" "$data"

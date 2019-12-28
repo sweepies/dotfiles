@@ -10,6 +10,8 @@ if [[ -d "/home/linuxbrew" ]]; then
     export INFOPATH="/home/linuxbrew/.linuxbrew/share/info${INFOPATH+:$INFOPATH}"
 fi
 
+export PATH="$HOME/.local/bin:$PATH"
+
 if [[ -n $SSH_CONNECTION ]]; then
     export EDITOR='nano'
 else
@@ -29,44 +31,6 @@ if type hub &> /dev/null; then
 fi
 
 export CLOUDSDK_PYTHON="python3"
-
-### functions ###
-rand() {
-    types=("hex" "base64" "b64" "chars" "c")
-
-    if [[ -z $1 ]]; then
-        cat << EOF
-Usage: $0 TYPE AMOUNT
-Generate random data
-
-AMOUNT is in bytes.
-
-Possible types:
-  hex
-  base64, b64
-  chars, c
-EOF
-        return 126
-    fi
-
-    if ! [[ "${types[*]}" =~ $1 ]]; then
-        echo "$0: invalid type: '$1'"
-        return 1
-    fi
-
-    if ! [[ $2 =~ ^[0-9]+$ ]]; then
-        echo "$0: invalid number: '$2'"
-        return 1
-    fi
-
-    case "$1" in
-        "hex") data=$(head -c "$2" < /dev/urandom | xxd -p) ;;
-        "base64" | "b64") data=$(head -c "$2" < /dev/urandom | base64) ;;
-        "chars" | "c") data=$(tr -dc a-zA-Z0-9 < /dev/urandom | head -c "$2") ;;
-    esac
-
-    printf "%s\n" "$data"
-}
 
 # WSL specific
 if grep -qE "(Microsoft|WSL)" /proc/version &> /dev/null; then
