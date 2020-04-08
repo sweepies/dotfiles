@@ -1,17 +1,3 @@
-FPATH="/home/linuxbrew/.linuxbrew/share/zsh/site-functions:$FPATH"
-
-if [[ -d "/home/linuxbrew" ]]; then
-    # `brew shellenv`
-    export HOMEBREW_PREFIX="/home/linuxbrew/.linuxbrew"
-    export HOMEBREW_CELLAR="/home/linuxbrew/.linuxbrew/Cellar"
-    export HOMEBREW_REPOSITORY="/home/linuxbrew/.linuxbrew/Homebrew"
-    export PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin${PATH+:$PATH}"
-    export MANPATH="/home/linuxbrew/.linuxbrew/share/man${MANPATH+:$MANPATH}:"
-    export INFOPATH="/home/linuxbrew/.linuxbrew/share/info${INFOPATH+:$INFOPATH}"
-fi
-
-export PATH="$HOME/.local/bin:$PATH"
-
 if [[ -n $SSH_CONNECTION ]]; then
     export EDITOR='nano'
 else
@@ -30,8 +16,6 @@ if type hub &> /dev/null; then
     # `hub alias -s`
     alias git=hub
 fi
-
-export CLOUDSDK_PYTHON="python3"
 
 # WSL specific
 if grep -qE "(Microsoft|WSL)" /proc/version &> /dev/null; then
