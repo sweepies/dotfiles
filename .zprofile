@@ -16,7 +16,7 @@ if [[ -n $SSH_CONNECTION ]]; then
     export EDITOR='nano'
 else
     if type code &> /dev/null; then
-        export EDITOR='code'
+        export EDITOR='code-insiders'
     fi
     if type keychain &> /dev/null; then
         eval "$(keychain --eval --agents gpg,ssh id_ed25519 3A8457B5)"
@@ -24,6 +24,7 @@ else
 fi
 
 alias ls="ls -A"
+alias code="code-insiders"
 
 if type hub &> /dev/null; then
     # `hub alias -s`
