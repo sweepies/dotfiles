@@ -1,5 +1,5 @@
 # depends on zplugin, opportunistic extras:
-# linuxbrew, vscode, keychain, hub, gcloud, httpie, docker, dotenv
+# hub, gcloud, docker, dotenv, npm
 
 source "$HOME/.zplugin/bin/zplugin.zsh"
 autoload -Uz _zplugin compinit
@@ -28,3 +28,5 @@ for p in "${plugins[@]}"; do
 done
 
 compinit
+
+export N_PREFIX="$HOME/n"; [[ :$PATH: == *":$N_PREFIX/bin:"* ]] || PATH+=":$N_PREFIX/bin"  # Added by n-install (see http://git.io/n-install-repo).
