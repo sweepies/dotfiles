@@ -1,7 +1,7 @@
 if [[ -n $SSH_CONNECTION ]]; then
     export EDITOR='nano'
 else
-    if type code &> /dev/null; then
+    if type code-insiders &> /dev/null; then
         export EDITOR='code-insiders'
     fi
     if type keychain &> /dev/null; then
