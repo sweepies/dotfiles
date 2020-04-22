@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 types=("hex" "base64" "b64" "chars" "c")
 
 if [[ -z $1 ]]; then
@@ -11,7 +11,7 @@ Possible types:
   base64, b64
   chars, c
 
-Using encoded types, AMOUNT is in bytes.
+When using encoding types, AMOUNT is in bytes.
 EOF
     exit 126
 fi
