@@ -1,19 +1,17 @@
 #!/usr/bin/env sh
-
-
 types=("hex" "base64" "b64" "chars" "c")
 
 if [[ -z $1 ]]; then
     cat << EOF
-Usage: $0 TYPE AMOUNT
+Usage: $0 <TYPE> <AMOUNT>
 Generate random data
-
-AMOUNT is in bytes.
 
 Possible types:
   hex
   base64, b64
   chars, c
+
+Using encoded types, AMOUNT is in bytes.
 EOF
     exit 126
 fi

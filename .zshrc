@@ -1,32 +1,50 @@
-# depends on zplugin, opportunistic extras:
-# hub, gcloud, docker, dotenv, npm
+source ~/.zinit/bin/zinit.zsh
+autoload -Uz _zinit
+(( ${+_comps} )) && _comps[zinit]=_zinit
 
-source "$HOME/.zplugin/bin/zplugin.zsh"
-autoload -Uz _zplugin compinit
-(( ${+_comps} )) && _comps[zplugin]=_zplugin
+zinit ice depth"1" multisrc="lib/*.zsh" pick"/dev/null"
 
-zplugin ice depth"1" multisrc="lib/*.zsh" pick"/dev/null"
-zplugin light robbyrussell/oh-my-zsh
+zinit light robbyrussell/oh-my-zsh
+zinit snippet OMZ::themes/lukerandall.zsh-theme
 
-zplugin snippet OMZ::themes/lukerandall.zsh-theme
+zinit light zsh-users/zsh-autosuggestions
+zinit light zdharma/fast-syntax-highlighting
 
-zplugin light zdharma/fast-syntax-highlighting
-zplugin light zsh-users/zsh-completions
-zplugin light zsh-users/zsh-autosuggestions
+zinit ice as"completions" blockf
+zinit light zsh-users/zsh-completions
 
-zplugin ice as"completion"
-zplugin snippet OMZ::plugins/docker/_docker
-
-zplugin ice as"completion"
-zplugin snippet OMZ::plugins/httpie/_httpie
-
-plugins=("git" "docker-compose" "dotenv" "command-not-found"
-    "extract" "colored-man-pages" "gcloud" "github" "npm")
+plugins=("dotenv" "extract" "colored-man-pages")
 
 for p in "${plugins[@]}"; do
-   zplugin snippet OMZ::plugins/"$p"/"$p".plugin.zsh
+   zinit snippet OMZ::plugins/"$p"/"$p".plugin.zsh
 done
 
-compinit
+zinit compinit > /dev/null
 
 export N_PREFIX="$HOME/n"; [[ :$PATH: == *":$N_PREFIX/bin:"* ]] || PATH+=":$N_PREFIX/bin"  # Added by n-install (see http://git.io/n-install-repo).
+
+if [[ -z $SSH_CONNECTION ]] && type code-insiders &> /dev/null; then
+    export EDITOR='code-insiders'
+else
+    export EDITOR='nano'
+fi
+
+alias ls="ls --almost-all"
+alias code="code-insiders"
+
+if type hub &> /dev/null; then
+    alias git=hub
+fi
+
+# WSL specific
+if grep --quiet --extended-regexp --ignore-case "(Microsoft|WSL)" /proc/version; then
+    explorer() {
+        if [[ -z $1 ]]; then
+            explorer.exe $(wslpath -w .)
+        else
+            explorer.exe $(wslpath -w "$1")
+        fi
+    }
+fi
+
+export PATH="$PATH:$HOME/.local/bin"
