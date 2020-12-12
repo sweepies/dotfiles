@@ -20,7 +20,7 @@
   editor = nano
 
 [commit]
-  gpgsign = true
+  gpgsign = false
 
 [url "git@github.com:"]
   insteadOf = "gh:"
@@ -33,3 +33,5 @@
 [url "git@gist.github.com:"]
   insteadOf = "gist:"
   pushInsteadOf = "gist:"
+[init]
+	templatedir = ~/.config/git/templates
