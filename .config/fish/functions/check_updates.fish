@@ -10,18 +10,12 @@ function check_updates
         set time_now (date +%s)
         set last_modified (stat -c %Y $updates_file)
 
-        if test (math $time_now - $last_modified) -ge 259200
+        if test (math $time_now - $last_modified) -ge 86400 # 1 day
             check
         end
     end
 
-    set updates_list (cat $updates_file)
-
-        #for package in $updates_ignore_list
-        #    set -a updates_list 
-        #end
-
-    set updates_count (echo $updates_list | wc -l)
+    set updates_count (cat $updates_file | wc -l)
 
     if test $updates_count -eq 0
         return
