@@ -19,4 +19,6 @@ end
 
 eval (direnv hook fish)
 
-check_updates
+if type yay &> /dev/null
+    check_updates
+end

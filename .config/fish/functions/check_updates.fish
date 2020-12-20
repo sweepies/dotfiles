@@ -1,4 +1,9 @@
 function check_updates
+    if not type yay &> /dev/null
+        echo "Yay AUR helper not found"
+        return 1
+    end
+
     function check
         echo "Checking for package updates"
         yay --query --upgrades --refresh > $updates_file
