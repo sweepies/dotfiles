@@ -1,6 +1,9 @@
 # This file contains fish universal variable definitions.
 # VERSION: 3.0
+SETUVAR --export GPG_AGENT_INFO:/home/sweepy/\x2egnupg/S\x2egpg\x2dagent\x3a10076\x3a1
 SETUVAR N_PREFIX:/home/sweepy/n/
+SETUVAR --export SSH_AGENT_PID:10831
+SETUVAR --export SSH_AUTH_SOCK:/tmp/ssh\x2dz1fNrDGaMBte/agent\x2e10830
 SETUVAR __fish_initialized:3100
 SETUVAR fish_color_autosuggestion:969896
 SETUVAR fish_color_cancel:\x2dr

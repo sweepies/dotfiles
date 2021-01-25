@@ -18,5 +18,3 @@ if grep --quiet --extended-regexp --ignore-case "(Microsoft|WSL)" /proc/version
 end
 
 direnv hook fish | source
-
-# check_updates # gotta fix this
