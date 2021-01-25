@@ -17,8 +17,6 @@ if grep --quiet --extended-regexp --ignore-case "(Microsoft|WSL)" /proc/version
     alias explore=explorer
 end
 
-eval (direnv hook fish)
+direnv hook fish | source
 
-if type yay &> /dev/null
-    check_updates
-end
+# check_updates # gotta fix this

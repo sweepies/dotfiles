@@ -16,7 +16,7 @@ EOF
     exit 126
 fi
 
-if [[ ! " ${types[@]} " =~ " ${1} " ]]; then
+if ! [[ "${types[*]}" =~ $1 ]]; then
     echo "$0: invalid type: '$1'"
     exit 1
 fi

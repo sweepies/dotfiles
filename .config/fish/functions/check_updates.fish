@@ -1,9 +1,4 @@
 function check_updates
-    if not type yay &> /dev/null
-        echo "Yay AUR helper not found"
-        return 1
-    end
-
     function check
         echo "Checking for package updates"
         yay --query --upgrades --refresh > $updates_file
@@ -15,12 +10,18 @@ function check_updates
         set time_now (date +%s)
         set last_modified (stat -c %Y $updates_file)
 
-        if test (math $time_now - $last_modified) -ge 86400 # 1 day
+        if test (math $time_now - $last_modified) -ge 259200
             check
         end
     end
 
-    set updates_count (cat $updates_file | wc -l)
+    set updates_list (cat $updates_file)
+
+        #for package in $updates_ignore_list
+        #    set -a updates_list 
+        #end
+
+    set updates_count (echo $updates_list | wc -l)
 
     if test $updates_count -eq 0
         return
