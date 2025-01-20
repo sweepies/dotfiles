@@ -1,7 +1,7 @@
 #!/usr/bin/env fish
 
 function rand
-    set types "hex" "base64" "b64" "chars" "c" "password" "pw"
+    set types "hex" "base64" "b64" "chars" "c" "password" "pw" "uuid" "guid"
 
     if set -q $argv[1]
         printf "Usage: %s TYPE [<AMOUNT>]\n" (status current-command)
@@ -13,6 +13,7 @@ Possible types:
   base64, b64
   chars, c
   password, pw
+  uuid, guid
 
 When using encoding types, AMOUNT is in bytes.\n"
         return 126
@@ -23,7 +24,7 @@ When using encoding types, AMOUNT is in bytes.\n"
         return 22
     end
 
-    if not string match -q $argv[1] "password" "pw"
+    if not string match -q $argv[1] "password" "pw" "uuid" "guid"
         if not string match -rq '^[0-9]+$' $argv[2]
             printf "%s: invalid number: '%s'\n" (status current-command) "$argv[2]"
             return 22
@@ -39,8 +40,9 @@ When using encoding types, AMOUNT is in bytes.\n"
         case "chars" "c"
             set data (tr -cd "[:alnum:]" < /dev/urandom | head -c "$argv[2]")
         case "password" "pw"
-            #set data (tr -cd "[:alnum:]" < /dev/urandom | head -c 24)
-            set data (rand chars 24)
+            set data (tr -cd "[:alnum:][:punct:]" < /dev/urandom | head -c 24)
+        case "uuid" "guid"
+            set data (uuidgen --random)
 
     end
 
