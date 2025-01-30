@@ -1,0 +1,6 @@
+[env]
+_.file = ".env"
+
+[tools]
+ripgrep = "latest"
+usage = "latest"
