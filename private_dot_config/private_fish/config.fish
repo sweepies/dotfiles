@@ -1,5 +1,3 @@
-direnv hook fish | source
-
 # Configure ssh forwarding
 #set -x SSH_AUTH_SOCK $HOME/.ssh/agent.sock
 # need `ps -ww` to get non-truncated command for matching
@@ -41,6 +39,4 @@ direnv hook fish | source
 #set __fish_git_prompt_char_upstream_ahead '+'
 #set __fish_git_prompt_char_upstream_behind -
 
-
-# Created by `pipx` on 2025-01-20 07:00:48
-set PATH $PATH /home/sweepy/.local/bin
+/home/sweepy/.local/bin/mise activate fish | source
