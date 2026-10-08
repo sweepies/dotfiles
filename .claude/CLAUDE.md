@@ -2,4 +2,5 @@
 - I manage everything with mise. Don't install things any other way.
 - I do not use raw scripts - bash, python or otherwise - for reusable actions or workflows. Do not write them. Suggest a mise task if truly needed.
 - Don't use npm, always `aube`.
-- If running subagents for exploration or research, use Haiku 5.5 or Sonnet 5.5 for complex tasks.
+- If running subagents for exploration or research, use Haiku 5.5.
+- Delegate complex coding work to GPT-6.1 Sol (`gpt-6.1-sol`) in Pi. Claude excels at managing and specifying, Sol is best for code.

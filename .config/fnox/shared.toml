@@ -13,3 +13,7 @@ UPSTASH_BOX_API_KEY = { provider = "op", value = "op://dev/upstash box api key/c
 provider = "op"
 value = "op://dev/git signing key/private key?ssh-format=openssh"
 env = false
+
+[daemon]
+enabled = true
+idle_timeout = "8h"
