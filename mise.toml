@@ -35,6 +35,7 @@ manifest = "git"
 "~/.gitconfig" = { source = "~/dotfiles/.gitconfig", mode = "symlink" }
 # Keep this DIRECTORY symlinked: Entire refuses to replace hooks through it.
 "~/.config/git/hooks" = { source = "~/dotfiles/.config/git/hooks", mode = "symlink" }
+"~/.claude/AGENTS.md" = { source = "~/dotfiles/.claude/AGENTS.md", mode = "symlink" }
 "~/.pi/agent/settings.json" = { source = "~/dotfiles/.pi/agent/settings.json", mode = "symlink" }
 "~/.config/billion-context/billion-context.json" = { source = "~/dotfiles/.config/billion-context/billion-context.json", mode = "symlink" }
 "~/.pi/agent/extensions/t3-prompt-cleanup.ts" = { source = "~/dotfiles/.pi/agent/extensions/t3-prompt-cleanup/index.ts", mode = "symlink" }
