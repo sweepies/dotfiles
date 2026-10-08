@@ -33,6 +33,8 @@ manifest = "git"
 # file as a normal tool config. The source is static; no script is involved.
 "~/.config/mise/miserc.toml" = { source = "~/dotfiles/.miserc.toml", mode = "template" }
 "~/.gitconfig" = { source = "~/dotfiles/.gitconfig", mode = "symlink" }
+# Keep this DIRECTORY symlinked: Entire refuses to replace hooks through it.
+"~/.config/git/hooks" = { source = "~/dotfiles/.config/git/hooks", mode = "symlink" }
 "~/.pi/agent/settings.json" = { source = "~/dotfiles/.pi/agent/settings.json", mode = "symlink" }
 "~/.config/billion-context/billion-context.json" = { source = "~/dotfiles/.config/billion-context/billion-context.json", mode = "symlink" }
 "~/.pi/agent/extensions/t3-prompt-cleanup.ts" = { source = "~/dotfiles/.pi/agent/extensions/t3-prompt-cleanup/index.ts", mode = "symlink" }
@@ -40,7 +42,44 @@ manifest = "git"
 [tasks."entire:checkpoints"]
 description = "Route this enabled repository's Entire checkpoints to the private shared store"
 dir = "{{cwd}}"
-run = "entire configure --local --checkpoint-remote github:sweepies/entire-checkpoints"
+run = '''
+set -eu
+hooks=$(git rev-parse --path-format=absolute --git-common-dir)/hooks
+# The Git shell alias scopes config for Entire's child Git commands without
+# replacing the caller's GIT_CONFIG_COUNT / GIT_CONFIG_PARAMETERS environment.
+git -c core.hooksPath="$hooks" \
+  -c 'alias.entire-checkpoint-enroll=!entire configure --local --checkpoint-remote github:sweepies/entire-checkpoints' \
+  entire-checkpoint-enroll
+'''
+
+[tasks."entire:cli"]
+description = "Run Entire lifecycle commands without changing the shared Git hooks"
+dir = "{{cwd}}"
+run = '''
+set -eu
+hooks=$(git rev-parse --path-format=absolute --git-common-dir)/hooks
+git -c core.hooksPath="$hooks" -c 'alias.entire-local=!entire' entire-local "$@"
+'''
+
+[tasks."git:hooks:audit"]
+description = "Report local/worktree hook-path overrides and verify the global dispatcher"
+dir = "{{cwd}}"
+run = "python3 $HOME/.config/git/hooks/audit.py"
+
+[tasks."test:git-hooks"]
+description = "Test global Git dispatch and private checkpoint push enforcement"
+dir = "{{env.HOME}}/dotfiles"
+run = 'ENTIRE_TEST_BINARY="$(mise which entire)" MISE_TEST_BINARY="$(command -v mise)" PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s .config/git/tests -v'
+
+# Entire's uninstall follows a directory link and removes marked hook files.
+# Protect the shared entrypoints from that too. Remote-agent scopes its native
+# repo updater's writable window with a cleanup trap; manual pulls must unlock
+# first and reapply dotfiles afterward. Standalone repo commands run no hooks.
+[bootstrap.hooks.post-dotfiles]
+run = 'chmod a-w "$HOME/dotfiles/.config/git/hooks"'
+
+[bootstrap.hooks.post-tools]
+run = 'mise exec -- python3 "$HOME/.config/git/hooks/audit.py"'
 
 [tasks."test:pi-prompt-cleanup"]
 description = "Test the local T3 prompt-deduplication extension"

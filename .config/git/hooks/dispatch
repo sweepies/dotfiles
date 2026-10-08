@@ -1,0 +1,51 @@
+#!/bin/sh
+# Git invokes entrypoints from the shared hooks directory. Keep repository-local
+# hooks intact, including hooks in a linked worktree's common Git directory.
+set -eu
+hook=${DOTFILES_HOOK_NAME-${0##*/}}
+if ! common_dir=$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null); then
+    # Git init invokes reference-transaction before the new directory is a
+    # fully discoverable repository. Git supplies its directory to this hook.
+    # Preserve any template hook rather than breaking creation of new repos.
+    if [ "$hook" = reference-transaction ]; then
+        common_dir=${GIT_COMMON_DIR:-${GIT_DIR:-}}
+    else
+        common_dir=
+    fi
+    if [ -z "$common_dir" ] || [ ! -d "$common_dir" ]; then
+        printf '%s\n' 'dotfiles: could not locate repository-local hooks.' >&2
+        exit 1
+    fi
+fi
+local_hook=$common_dir/hooks/$hook
+if [ "${DOTFILES_GIT_HOOK_ACTIVE-}" = "$local_hook" ]; then
+    printf '%s\n' 'dotfiles: recursive Git hook dispatch refused.' >&2
+    exit 1
+fi
+DOTFILES_GIT_HOOK_ACTIVE=$local_hook
+export DOTFILES_GIT_HOOK_ACTIVE
+if [ -e "$local_hook" ] && [ "$local_hook" -ef "$0" ]; then
+    printf '%s\n' 'dotfiles: repository hook points back to the shared dispatcher.' >&2
+    exit 1
+fi
+if [ "$hook" = pre-push ]; then
+    # Python is a shared mise tool. Non-push hooks do not depend on Python, so
+    # installing the global Git config does not prevent initial bootstrapping.
+    exec python3 "${0%/*}/checkpoint-guard.py" "$local_hook" "$@"
+fi
+if [ -x "$local_hook" ]; then
+    exec "$local_hook" "$@"
+fi
+# Newly enabled clones can use Entire without installing Git hooks per repo.
+# Existing repo-local hooks already invoke Entire; never run it twice.
+case "$hook" in
+    prepare-commit-msg|commit-msg|post-commit|post-rewrite)
+        if command -v entire >/dev/null 2>&1; then
+            if [ "$hook" = prepare-commit-msg ]; then
+                entire hooks git "$hook" "$1" "${2-}" || true
+            else
+                entire hooks git "$hook" "$@" || true
+            fi
+        fi
+        ;;
+esac

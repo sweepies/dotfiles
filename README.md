@@ -81,8 +81,85 @@ mise run entire:checkpoints
 
 This saves routing in gitignored `.entire/settings.local.json`. New clones of
 these dotfiles have automatic checkpoint uploads disabled by default; the owner
-can enable them locally after configuring the private destination. Each machine
-and clone needs its own setup. This does not relocate existing published sessions.
+can enable them locally after configuring the private destination. The private
+route still needs local enrollment; **the guard does not**. This does not relocate
+existing published sessions.
+
+### Global Git hook guard
+
+Shared `.gitconfig` sets `core.hooksPath = ~/.config/git/hooks`. One native mise
+apply activates the guard for all existing and future repositories on that
+machine, without installing a guard in each clone:
+
+```sh
+mise dot apply "$HOME/.config/git/hooks" "$HOME/.gitconfig" --yes
+mise run git:hooks:audit
+mise run test:git-hooks
+```
+
+The pre-push guard runs before repository-local hooks or Entire's automatic
+checkpoint sync. Enabled Entire repos must report the dedicated
+`sweepies/entire-checkpoints` route; `gh api` must confirm that repository is
+private on github.com. The approved route must be explicitly enrolled in regular,
+untracked `.entire/settings.local.json`, absent from both index and HEAD. A
+project-inherited route can look dedicated in status but fall back for a different
+push remote, so it does not establish local consent. Enabled Entire must push
+through a configured remote name, not a bare URL. Missing authentication,
+malformed configuration, public visibility, fallback routing, and unsafe Git URL
+rewrites fail closed. Retained native Entire hooks remain guarded even if their
+settings files were deleted. Ordinary repos without Entire do not need Entire or
+GitHub authentication to push code.
+
+Outgoing `refs/entire/*` and `refs/heads/entire/*` refs are blocked unless the
+actual destination is the approved private checkpoint repo, including renamed
+refspecs and Git URL rewrites. Checkpoint deletions remain allowed. This protects
+known checkpoint namespaces; it is not a content/secret scanner and cannot
+identify deliberately renamed checkpoint objects. Git contacts the remote for
+ref discovery before pre-push runs; rejection prevents object/ref transfer, not
+the initial connection.
+
+All documented Git hook events dispatch to existing executable hooks in the
+Git common directory, preserving arguments, stdin, working directory and exit
+status, including linked worktrees. Entire's five Git events also have native
+handler fallbacks when the repo has no local hook; existing local Entire hooks
+are never invoked twice. Entire's effective provider must be **GitHub**, not
+merely a matching repo slug on another forge. Automatic uploads also validate
+push-only URL rewrites and the source remote's derived host. Enterprise hosts,
+nondefault ports and `entire://` mirrors are refused until they can be verified
+as the approved public github.com destination.
+
+Entire 0.11.4 refuses to install through the managed hooks-directory symlink.
+The regular compatibility entrypoints satisfy its hook detection, and native
+mise hooks make the shared source directory read-only to prevent its uninstall
+from deleting the guard. Run lifecycle operations through the scoped task so
+Entire edits only the repository's own hooks:
+
+```sh
+mise run entire:cli -- enable --local --agent pi --skip-initial-commit \
+  --checkpoint-remote github:sweepies/entire-checkpoints
+mise run entire:cli -- configure --force
+mise run entire:cli -- disable --uninstall --force
+```
+
+Remote-agent provisioning scopes its native repository updater's temporary
+unlock with a cleanup trap that restores protection on success or failure.
+Standalone `mise bootstrap repos update` commands do **not** run bootstrap
+phase hooks. Before a **manual** dotfiles pull/edit or standalone update, run
+`chmod u+w "$HOME/dotfiles/.config/git/hooks"`; afterward run `mise dot apply
+--yes` to protect it again. Recheck compatibility when upgrading Entire.
+
+The audit runs after bootstrap tool installation and reports local/worktree
+`core.hooksPath` overrides, including included files, without changing them. It
+also checks each repo's effective path across all config scopes, including
+conditional global includes and command-scope overrides. By default it scans home,
+excluding dependency/cache trees and symlinked directories; pass other roots
+with `mise run git:hooks:audit -- /path/to/repos`. Husky/custom hook-path overrides
+must be reconciled explicitly, because they supersede the global guard.
+
+This is a default-workflow safeguard, not a security boundary: `--no-verify`,
+command-line/local hook-path overrides, removing the configuration, or direct
+Entire uploads can bypass Git's pre-push hook. No credentials or session data
+are stored in the shared hook files.
 
 ## Secrets and signing
 

@@ -1,0 +1,6 @@
+#!/bin/sh
+# Entire CLI hooks — global guarded dispatcher (native detection compatibility).
+# Entire invokes its handler only once, via the repo hook or dispatch fallback.
+DOTFILES_HOOK_NAME=${0##*/}
+export DOTFILES_HOOK_NAME
+exec "${0%/*}/dispatch" "$@"
