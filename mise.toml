@@ -19,6 +19,7 @@ pi = "1.0.4"
 "fnox" = "latest"
 "npm:@upstash/box-cli" = "latest"
 entire = "latest"
+claude = "2.1.293"
 
 # Shared across the Mac and remote dev box. .miserc.toml enables native platform
 # discovery; mise.macos.toml adds the Mac's interactive workstation setup.
@@ -39,6 +40,8 @@ manifest = "git"
 "~/.pi/agent/settings.json" = { source = "~/dotfiles/.pi/agent/settings.json", mode = "symlink" }
 "~/.config/billion-context/billion-context.json" = { source = "~/dotfiles/.config/billion-context/billion-context.json", mode = "symlink" }
 "~/.pi/agent/extensions/t3-prompt-cleanup.ts" = { source = "~/dotfiles/.pi/agent/extensions/t3-prompt-cleanup/index.ts", mode = "symlink" }
+# Link the directory so Pi can resolve the extension's adjacent helper module.
+"~/.pi/agent/extensions/t3-tool-discovery" = { source = "~/dotfiles/.pi/agent/extensions/t3-tool-discovery", mode = "symlink" }
 
 [tasks."entire:checkpoints"]
 description = "Route this enabled repository's Entire checkpoints to the private shared store"
@@ -86,6 +89,11 @@ run = 'mise exec -- python3 "$HOME/.config/git/hooks/audit.py"'
 description = "Test the local T3 prompt-deduplication extension"
 dir = "{{env.HOME}}/dotfiles"
 run = "node --test .pi/agent/tests/t3-prompt-cleanup.test.ts"
+
+[tasks."test:pi-tool-discovery"]
+description = "Test T3 on-demand tool activation and the installed Pi/T3 bridge"
+dir = "{{env.HOME}}/dotfiles"
+run = "node --test .pi/agent/tests/t3-tool-discovery*.test.ts"
 
 [settings]
 dotfiles.root = "~/dotfiles"

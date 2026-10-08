@@ -7,7 +7,8 @@ Requires **mise 2026.10.3 or newer**.
 ## Overview
 
 - **`mise.toml`** — shared development tools and Git, fnox, Pi, and
-  billion-context configuration, plus the local T3 prompt-cleanup extension.
+  billion-context configuration, plus local T3 prompt-cleanup and tool-discovery
+  extensions.
 - **`mise.macos.toml`** — Mac-only interactive tools, Fish setup, aliases,
   and the Secure Enclave age plugin.
 - **`.miserc.toml`** — automatically selects the Mac overlay on macOS.
@@ -69,6 +70,42 @@ This is a temporary workaround for
 [pingdotgg/t3code#16651](https://github.com/pingdotgg/t3code/issues/16651).
 Remove it once the upstream fix is included in the installed T3 release. Recheck
 fresh-session prompt duplication and T3 tool availability before removal.
+
+## Pi / T3 on-demand tools
+
+The companion extension at `~/.pi/agent/extensions/t3-tool-discovery` reduces
+T3's initially declared tool schemas. It keeps `orchestrator_capabilities`,
+`delegate_task`, `task_status`, and `task_cancel` active and adds `t3_tools` to
+find and activate the remaining T3 tools. All non-T3 active tools are preserved.
+
+For example, `t3_tools({"query":"browser screenshot"})` searches live T3 tool
+names and descriptions and activates up to five matches. To load a known tool,
+use `t3_tools({"names":["preview_snapshot"]})`. Then call that tool directly
+with its original parameters. Discovery executes no T3 operation and never
+re-registers tools, rewrites schemas, or bypasses T3's permission hook. Restricted
+runtime modes can require approval for discovery itself as well as the loaded
+operation.
+
+Loaded tools accumulate for the current session branch and survive resume/reload;
+returning to an earlier branch restores that branch's selection. This avoids
+unloading/reloading schemas every turn, though each new activation changes the
+tool prefix and can affect prompt caching. Keep the prompt-cleanup extension too:
+T3's forced prompt otherwise repeats tool descriptions. Shared orchestration and
+workspace instructions remain unchanged.
+
+Source: `.pi/agent/extensions/t3-tool-discovery/index.ts` and
+`.pi/agent/extensions/t3-tool-discovery/discovery.ts`. Deployment uses a
+mise-managed directory symlink so Pi can resolve the adjacent helper. Apply with
+`mise dot apply --yes`, then
+open a fresh T3 session or reload Pi. Run `mise run test:pi-tool-discovery` for
+unit tests and a deterministic integration probe using the installed Pi CLI and
+T3 bridge. It uses a local fake MCP server, no LLM requests, and no real server
+credentials. Bridge integration tests skip when the generated bridge is absent;
+set `T3_PI_BRIDGE_PATH` or `PI_DISCOVERY_CLI` to use non-default installations.
+
+To restore eager T3 tool declarations, exclude the extension in Pi settings:
+`"extensions": ["-~/.pi/agent/extensions/t3-tool-discovery"]`
+(merge with existing entries), then start a fresh session or reload.
 
 ## Private session checkpoints
 

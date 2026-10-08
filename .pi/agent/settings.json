@@ -12,6 +12,8 @@
     "npm:@tunnckocore/pi-gpt-fast-mode",
     "git:github.com/sweepies/pi-nu",
     "npm:@capotej/pi-mise",
-    "npm:@kickythrust/pi-fnox"
-  ]
+    "git:github.com/sweepies/pi-fnox",
+    "npm:@gotgenes/pi-anthropic-auth"
+  ],
+  "lastChangelogVersion": "1.0.4"
 }
