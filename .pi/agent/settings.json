@@ -1,0 +1,17 @@
+{
+  "defaultProvider": "openai",
+  "defaultModel": "gpt-6.1-sol",
+  "packages": [
+    "npm:pi-web-access",
+    {
+      "source": "npm:@juicesharp/rpiv-ask-user-question",
+      "extensions": []
+    },
+    "npm:billion-context",
+    "npm:pi-lens",
+    "npm:@tunnckocore/pi-gpt-fast-mode",
+    "git:github.com/sweepies/pi-nu",
+    "npm:@capotej/pi-mise",
+    "npm:@kickythrust/pi-fnox"
+  ]
+}

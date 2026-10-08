@@ -1,0 +1,10 @@
+[user]
+	email = git@sweepy.dev
+	name = Sweepy
+	signingkey = ~/.ssh/git-signing
+[gpg]
+	format = ssh
+[gpg "ssh"]
+	program = ssh-keygen
+[commit]
+	gpgsign = true

@@ -1,0 +1,58 @@
+# Native dotfile groups/entries require mise 2026.10.3 or newer.
+min_version = "2026.10.3"
+
+[tools]
+nushell = "latest"
+age = "latest"
+rg = "latest"
+rclone = "latest"
+node = "latest"
+python = "latest"
+uv = "latest"
+gh = "latest"
+fd = "latest"
+shfmt = "latest"
+pitchfork = "latest"
+aube = "latest"
+"npm:cf" = "1.0.0-beta.10"
+pi = "1.0.4"
+"fnox" = "latest"
+"npm:@upstash/box-cli" = "latest"
+entire = "latest"
+
+# Shared across the Mac and remote dev box. .miserc.toml enables native platform
+# discovery; mise.macos.toml adds the Mac's interactive workstation setup.
+[dotfile_groups.fnox]
+root = ".config/fnox"
+target = "~/.config/fnox"
+manifest = "git"
+
+[dotfiles]
+"~/.config/mise/config.toml" = { source = "~/dotfiles/mise.toml", mode = "symlink" }
+# Template mode keeps mise 2026.10.3's dry-run from parsing this early-init
+# file as a normal tool config. The source is static; no script is involved.
+"~/.config/mise/miserc.toml" = { source = "~/dotfiles/.miserc.toml", mode = "template" }
+"~/.gitconfig" = { source = "~/dotfiles/.gitconfig", mode = "symlink" }
+"~/.pi/agent/settings.json" = { source = "~/dotfiles/.pi/agent/settings.json", mode = "symlink" }
+"~/.config/billion-context/billion-context.json" = { source = "~/dotfiles/.config/billion-context/billion-context.json", mode = "symlink" }
+"~/.pi/agent/extensions/t3-prompt-cleanup.ts" = { source = "~/dotfiles/.pi/agent/extensions/t3-prompt-cleanup/index.ts", mode = "symlink" }
+
+[tasks."entire:checkpoints"]
+description = "Route this enabled repository's Entire checkpoints to the private shared store"
+dir = "{{cwd}}"
+run = "entire configure --local --checkpoint-remote github:sweepies/entire-checkpoints"
+
+[tasks."test:pi-prompt-cleanup"]
+description = "Test the local T3 prompt-deduplication extension"
+dir = "{{env.HOME}}/dotfiles"
+run = "node --test .pi/agent/tests/t3-prompt-cleanup.test.ts"
+
+[settings]
+dotfiles.root = "~/dotfiles"
+dotfiles.relative_symlinks = true
+experimental = true
+env_cache = true
+auto_update = true
+
+[settings.npm]
+package_manager = "aube"

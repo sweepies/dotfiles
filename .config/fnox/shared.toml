@@ -1,0 +1,15 @@
+default_provider = "op"
+
+[providers.op]
+type = "1password"
+vault = "dev"
+
+[secrets]
+UPSTASH_BOX_API_KEY = { provider = "op", value = "op://dev/upstash box api key/credential" }
+
+# Provision ~/.ssh/git-signing once with this profile and --no-defaults.
+# Never inject the private key into shells or unrelated fnox exec commands.
+[profiles.git-signing.secrets.GIT_SSH_SIGNING_KEY]
+provider = "op"
+value = "op://dev/git signing key/private key?ssh-format=openssh"
+env = false

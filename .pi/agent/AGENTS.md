@@ -1,0 +1,4 @@
+- Always use a hard cutover approach. Never leave code around for backward compatibility unless explicitly asked.
+- I manage everything with mise. Don't install things any other way. 
+- I do not use raw scripts - bash, python or otherwise - for reusable actions or workflows. Do not write them. Suggest a mise task if truly needed.
+- Don't use npm, always `aube`.

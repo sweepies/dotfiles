@@ -1,0 +1,14 @@
+# Machine-local Fish state is not a deployable dotfile.
+.config/fish/fish_variables
+
+# fnox recipients, identities, and encrypted caches are machine-local.
+.config/fnox/config.toml
+.config/fnox/config.local.toml
+**/fnox.local.toml
+**/.fnox.local.toml
+.config/fnox/age*.txt
+.config/fnox/*.agekey
+
+# SSH identities and signing keys are never deployable dotfiles.
+/.ssh/
+/id_*
