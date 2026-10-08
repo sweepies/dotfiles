@@ -1,5 +1,5 @@
 # Native dotfile groups/entries require mise 2026.10.3 or newer.
-min_version = "2026.10.3"
+min_version = "2026.10.4"
 
 [tools]
 nushell = "latest"
@@ -37,7 +37,9 @@ manifest = "git"
 # Keep this DIRECTORY symlinked: Entire refuses to replace hooks through it.
 "~/.config/git/hooks" = { source = "~/dotfiles/.config/git/hooks", mode = "symlink" }
 "~/.claude/CLAUDE.md" = { source = "~/dotfiles/.claude/CLAUDE.md", mode = "symlink" }
-"~/.pi/agent/settings.json" = { source = "~/dotfiles/.pi/agent/settings.json", mode = "symlink" }
+# Merge only the shared keys: Pi writes machine-local keys (deviceId,
+# lastChangelogVersion) to the same file, and those must not be shared.
+"~/.pi/agent/settings.json/shared" = { source = "~/dotfiles/.pi/agent/settings.json", merge = true }
 "~/.config/billion-context/billion-context.json" = { source = "~/dotfiles/.config/billion-context/billion-context.json", mode = "symlink" }
 "~/.pi/agent/extensions/t3-prompt-cleanup.ts" = { source = "~/dotfiles/.pi/agent/extensions/t3-prompt-cleanup/index.ts", mode = "symlink" }
 # Link the directory so Pi can resolve the extension's adjacent helper module.

@@ -1,4 +1,5 @@
 {
+  "$comment": "Shared keys here are merged into each machine's ~/.pi/agent/settings.json by mise dotfiles (merge = true). To persist a change, edit ~/dotfiles/.pi/agent/settings.json in the dotfiles repo; editing a shared key in the live file is overwritten by the next `mise dotfiles apply`. Machine-local keys Pi writes (deviceId, lastChangelogVersion) stay only in the live file and must not be added here.",
   "defaultProvider": "openai",
   "defaultModel": "gpt-6.1-sol",
   "packages": [
@@ -7,13 +8,11 @@
       "source": "npm:@juicesharp/rpiv-ask-user-question",
       "extensions": []
     },
-    "npm:billion-context",
     "npm:pi-lens",
     "npm:@tunnckocore/pi-gpt-fast-mode",
     "git:github.com/sweepies/pi-nu",
     "npm:@capotej/pi-mise",
     "git:github.com/sweepies/pi-fnox",
     "npm:@gotgenes/pi-anthropic-auth"
-  ],
-  "lastChangelogVersion": "1.0.4"
+  ]
 }
