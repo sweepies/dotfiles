@@ -49,8 +49,12 @@ def repositories(roots: list[Path]):
 def main() -> int:
     expected = Path.home() / ".config/git/hooks"
     problems = False
-    result = git("config", "--global", "--includes", "--path", "--get", "core.hooksPath")
-    if result.returncode != 0 or Path(result.stdout.strip()) != expected:
+    # --global selects ~/.gitconfig when it exists, missing XDG defaults.
+    # Read both in Git's normal order, without mistaking other scopes for global.
+    result = git("config", "--includes", "--null", "--show-scope", "--path", "--get-all", "core.hooksPath")
+    fields = result.stdout.split("\0")
+    global_paths = [value for scope, value in zip(fields[::2], fields[1::2]) if scope == "global"]
+    if result.returncode != 0 or not global_paths or Path(global_paths[-1]) != expected:
         print("Global core.hooksPath does not point to ~/.config/git/hooks.")
         problems = True
     if not expected.is_symlink():
