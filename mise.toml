@@ -24,6 +24,10 @@ codex = "latest"
 yazi = "latest"
 "github:tldr-pages/tlrc" = "latest"
 
+[env]
+# mise pins Claude Code; its self-updater cannot write mise's install prefix.
+DISABLE_AUTOUPDATER = "1"
+
 # Shared across the Mac and remote dev box. .miserc.toml enables native platform
 # discovery; mise.macos.toml adds the Mac's interactive workstation setup.
 [dotfile_groups.fnox]
