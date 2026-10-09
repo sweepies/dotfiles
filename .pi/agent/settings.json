@@ -4,15 +4,10 @@
   "defaultModel": "gpt-6.1-sol",
   "packages": [
     "npm:pi-web-access",
-    {
-      "source": "npm:@juicesharp/rpiv-ask-user-question",
-      "extensions": []
-    },
     "npm:pi-lens",
     "npm:@tunnckocore/pi-gpt-fast-mode",
     "git:github.com/sweepies/pi-nu",
     "npm:@capotej/pi-mise",
-    "git:github.com/sweepies/pi-fnox",
-    "npm:@gotgenes/pi-anthropic-auth"
+    "git:github.com/sweepies/pi-fnox"
   ]
 }

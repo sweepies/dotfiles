@@ -15,11 +15,14 @@ shfmt = "latest"
 pitchfork = "latest"
 aube = "latest"
 "npm:cf" = "1.0.0-beta.10"
-pi = "1.0.4"
+pi = "1.1.0"
 "fnox" = "latest"
 "npm:@upstash/box-cli" = "latest"
 entire = "latest"
-claude = "2.1.293"
+claude = "2.1.294"
+codex = "latest"
+yazi = "latest"
+"github:tldr-pages/tlrc" = "latest"
 
 # Shared across the Mac and remote dev box. .miserc.toml enables native platform
 # discovery; mise.macos.toml adds the Mac's interactive workstation setup.
