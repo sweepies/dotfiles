@@ -28,6 +28,7 @@ class AuditTests(unittest.TestCase):
         self.env = {key: value for key, value in os.environ.items()
                     if not key.startswith(("GIT_", "ENTIRE_", "GH_", "DOTFILES_"))}
         self.env.update(HOME=str(self.home), GIT_CONFIG_GLOBAL=str(self.home / ".gitconfig"),
+                        XDG_CONFIG_HOME=str(self.home / ".config"),
                         GIT_CONFIG_NOSYSTEM="1", GIT_TERMINAL_PROMPT="0", GIT_ALLOW_PROTOCOL="file")
         self.command("git", "config", "--global", "core.hooksPath", str(self.link))
         self.command("git", "config", "--global", "user.name", "Audit Fixture")
@@ -48,6 +49,47 @@ class AuditTests(unittest.TestCase):
 
     def audit(self):
         return self.command(sys.executable, str(HOOKS / "audit.py"), check=False)
+
+    def use_xdg_defaults(self):
+        self.env.pop("GIT_CONFIG_GLOBAL")
+        local = self.home / ".gitconfig"
+        local.rename(self.home / ".config/git/config")
+        local.touch()
+
+    def test_xdg_defaults_with_empty_machine_local_config(self):
+        self.use_xdg_defaults()
+        result = self.audit()
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_xdg_defaults_preserve_machine_local_settings(self):
+        self.use_xdg_defaults()
+        self.command("git", "config", "--global", "alias.fixture", "status")
+        configs = [self.home / ".gitconfig", self.home / ".config/git/config"]
+        before = [path.read_bytes() for path in configs]
+        result = self.audit()
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual([path.read_bytes() for path in configs], before)
+
+    def test_machine_local_hook_override_takes_precedence_over_xdg(self):
+        self.use_xdg_defaults()
+        self.command("git", "config", "--global", "core.hooksPath", "/fixture/custom")
+        result = self.audit()
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Global core.hooksPath does not point", result.stdout)
+
+    def test_last_global_hook_value_wins(self):
+        self.use_xdg_defaults()
+        self.command("git", "config", "--file", str(self.home / ".config/git/config"), "core.hooksPath", "/fixture/old")
+        self.command("git", "config", "--global", "core.hooksPath", "~/.config/git/hooks")
+        result = self.audit()
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_command_scope_cannot_substitute_for_missing_global_hooks(self):
+        self.command("git", "config", "--global", "--unset", "core.hooksPath")
+        self.env.update(GIT_CONFIG_COUNT="1", GIT_CONFIG_KEY_0="core.hooksPath", GIT_CONFIG_VALUE_0=str(self.link))
+        result = self.audit()
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Global core.hooksPath does not point", result.stdout)
 
     def test_multiple_worktrees_without_extension_are_auditable(self):
         self.command("git", "-C", str(self.repo), "worktree", "add", "-b", "fixture", str(self.home / "linked"))
