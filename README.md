@@ -47,6 +47,15 @@ mise dot apply --dry-run
 mise dot apply --yes
 ```
 
+## Machine-local Git configuration
+
+Shared Git defaults are linked to `~/.config/git/config`, Git's XDG global
+file. `~/.gitconfig` is a regular per-machine file: Git reads it after the XDG
+file, so its values win, and `git config --global` and `gh auth setup-git`
+write there instead of into this checkout. The post-dotfiles hook creates it
+when missing and replaces the old `~/.gitconfig` symlink. Sign in per machine
+as usual with `gh auth login` and `gh auth setup-git`; never commit that state.
+
 ## Pi / T3 prompt cleanup
 
 The global Pi extension at `~/.pi/agent/extensions/t3-prompt-cleanup.ts` removes
@@ -124,12 +133,13 @@ existing published sessions.
 
 ### Global Git hook guard
 
-Shared `.gitconfig` sets `core.hooksPath = ~/.config/git/hooks`. One native mise
+Shared `.gitconfig` (linked as `~/.config/git/config`) sets
+`core.hooksPath = ~/.config/git/hooks`. One native mise
 apply activates the guard for all existing and future repositories on that
 machine, without installing a guard in each clone:
 
 ```sh
-mise dot apply "$HOME/.config/git/hooks" "$HOME/.gitconfig" --yes
+mise dot apply "$HOME/.config/git/hooks" "$HOME/.config/git/config" --yes
 mise run git:hooks:audit
 mise run test:git-hooks
 ```
