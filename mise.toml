@@ -40,7 +40,10 @@ manifest = "git"
 # Template mode keeps mise 2026.10.3's dry-run from parsing this early-init
 # file as a normal tool config. The source is static; no script is involved.
 "~/.config/mise/miserc.toml" = { source = "~/dotfiles/.miserc.toml", mode = "template" }
-"~/.gitconfig" = { source = "~/dotfiles/.gitconfig", mode = "symlink" }
+# Shared defaults go in Git's XDG global file. ~/.gitconfig stays a regular,
+# machine-local file that Git reads second (so it wins) and that `git config
+# --global` / `gh auth setup-git` write to, keeping this checkout clean.
+"~/.config/git/config" = { source = "~/dotfiles/.gitconfig", mode = "symlink" }
 # Keep this DIRECTORY symlinked: Entire refuses to replace hooks through it.
 "~/.config/git/hooks" = { source = "~/dotfiles/.config/git/hooks", mode = "symlink" }
 "~/.claude/CLAUDE.md" = { source = "~/dotfiles/.claude/CLAUDE.md", mode = "symlink" }
@@ -88,8 +91,15 @@ run = 'ENTIRE_TEST_BINARY="$(mise which entire)" MISE_TEST_BINARY="$(command -v 
 # Protect the shared entrypoints from that too. Remote-agent scopes its native
 # repo updater's writable window with a cleanup trap; manual pulls must unlock
 # first and reapply dotfiles afterward. Standalone repo commands run no hooks.
+# Git writes --global changes to the XDG file (this checkout) unless
+# ~/.gitconfig exists, so ensure it is a regular file. Removing the old managed
+# symlink into this checkout loses nothing; any other symlink is left alone.
 [bootstrap.hooks.post-dotfiles]
-run = 'chmod a-w "$HOME/dotfiles/.config/git/hooks"'
+run = '''
+chmod a-w "$HOME/dotfiles/.config/git/hooks"
+if [ -L "$HOME/.gitconfig" ] && [ "$HOME/.gitconfig" -ef "$HOME/dotfiles/.gitconfig" ]; then rm "$HOME/.gitconfig"; fi
+[ -e "$HOME/.gitconfig" ] || : > "$HOME/.gitconfig"
+'''
 
 [bootstrap.hooks.post-tools]
 run = 'mise exec -- python3 "$HOME/.config/git/hooks/audit.py"'
