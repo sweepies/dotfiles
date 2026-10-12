@@ -8,5 +8,3 @@
 	program = ssh-keygen
 [commit]
 	gpgsign = true
-[core]
-	hooksPath = ~/.config/git/hooks
