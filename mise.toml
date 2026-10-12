@@ -17,7 +17,6 @@ aube = "latest"
 "npm:cf" = "1.0.0-beta.10"
 pi = "1.1.0"
 "fnox" = "latest"
-"npm:@upstash/box-cli" = "latest"
 claude = "2.1.294"
 codex = "latest"
 yazi = "latest"
@@ -28,8 +27,9 @@ awscli = { version = "latest", symlink_bins = "true" }
 # mise pins Claude Code; its self-updater cannot write mise's install prefix.
 DISABLE_AUTOUPDATER = "1"
 
-# Shared across the Mac and remote dev box. .miserc.toml enables native platform
-# discovery; mise.macos.toml adds the Mac's interactive workstation setup.
+# Shared across the Mac and Linux dev boxes. .miserc.toml enables native platform
+# discovery; mise.macos.toml adds the Mac's interactive workstation setup and
+# mise.linux.toml adds dev-box shell activation and machine secrets setup.
 [dotfile_groups.fnox]
 root = ".config/fnox"
 target = "~/.config/fnox"

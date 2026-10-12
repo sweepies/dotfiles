@@ -11,15 +11,17 @@ Requires **mise 2026.10.3 or newer**.
   extensions.
 - **`mise.macos.toml`** — Mac-only interactive tools, Fish setup, aliases,
   and the Secure Enclave age plugin.
-- **`.miserc.toml`** — automatically selects the Mac overlay on macOS.
-  Linux uses only the shared configuration; the host manages its shell and PATH.
+- **`mise.linux.toml`** — Linux dev-box bash activation, the 1Password CLI,
+  and the `secrets:init` / `secrets:sync` tasks.
+- **`.miserc.toml`** — automatically selects the platform overlay.
 
 Dotfiles are linked from `~/dotfiles`. Managed groups include only Git-indexed
 files and leave neighboring machine-local state alone.
 
 ## Getting started
 
-Install mise and Git, then:
+Install mise and Git, then clone to `~/dotfiles`. Every dotfile source points
+there, so don't use `mise bootstrap --adopt`: it clones into `~/.config/mise`.
 
 ```sh
 git clone https://github.com/sweepies/dotfiles.git "$HOME/dotfiles"
@@ -37,8 +39,18 @@ mise bootstrap mise-shell-activate apply --yes
 mise bootstrap --yes
 ```
 
-On Linux, run `mise bootstrap --yes`. Without shell activation, use
-`mise exec -- <command>` or the host's existing mise shims.
+### New Linux box
+
+Install mise, Git, and `ssh-keygen` (Debian/Ubuntu: `openssh-client`). Clone
+as above, then:
+
+```sh
+mise bootstrap --yes
+exec bash -l            # pick up mise activation
+mise run secrets:init   # prompts for a 1Password service account token
+gh auth login
+gh auth setup-git
+```
 
 To preview or apply dotfile changes without installing tools:
 
@@ -120,9 +132,25 @@ To restore eager T3 tool declarations, exclude the extension in Pi settings:
 
 Committed fnox configuration contains 1Password references, not credentials.
 Each machine keeps its own untracked fnox config, age identity, and encrypted
-caches. Remote machines use their own ordinary age identity, not a Mac Secure
+caches. Linux boxes use their own ordinary age identity, not a Mac Secure
 Enclave identity; do not export `FNOX_AGE_KEY`.
 
 Git uses SSH commit signing with a separately provisioned machine-local key at
 `~/.ssh/git-signing`. Bootstrap does not create or deploy private keys, secret
 caches, or authentication tokens.
+
+On Linux, `mise run secrets:init` handles this once per box:
+
+- creates `~/.config/fnox/age.txt` and a machine-local
+  `~/.config/fnox/config.toml` that imports `shared.toml` and adds the
+  `sync-age` provider;
+- prompts for a 1Password service account token with read access to the `dev`
+  vault and stores it age-encrypted in the `op-auth` profile;
+- runs `secrets:sync`.
+
+`mise run secrets:sync` exposes the token only to fnox's sync commands, refreshes
+the age-encrypted caches of the shared 1Password secrets, and writes
+`~/.ssh/git-signing` when it is missing. Re-run it after adding or rotating
+secrets in 1Password. To replace the signing key, delete it first. Each step is
+skipped if already done, so both tasks are safe to re-run. Give each box its own
+service account so you can revoke it independently.

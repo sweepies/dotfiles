@@ -1,0 +1,74 @@
+# Loaded automatically on Linux via auto_env in .miserc.toml.
+# Manually provisioned dev boxes: shell activation, the 1Password CLI, and
+# machine-local fnox secrets.
+
+[tools]
+# fnox's 1Password provider runs op, authenticated by a service account token.
+op = "latest"
+
+[bootstrap.mise_shell_activate]
+bash = "activate"
+
+[dotfiles]
+"~/.config/mise/config.linux.toml" = { source = "~/dotfiles/mise.linux.toml", mode = "symlink" }
+
+[tasks."secrets:init"]
+description = "Create this box's age identity and fnox config, store the 1Password token, then sync"
+raw = true
+run = '''
+set -eu
+umask 077
+dir="$HOME/.config/fnox"
+config="$dir/config.toml"
+identity="$dir/age.txt"
+mkdir -p "$dir"
+[ -e "$identity" ] || age-keygen -o "$identity"
+if [ ! -e "$config" ]; then
+    recipient=$(age-keygen -y "$identity")
+    cat > "$config" <<EOF
+import = ["./shared.toml"]
+
+[providers.sync-age]
+type = "age"
+recipients = ["$recipient"]
+key_file = "~/.config/fnox/age.txt"
+EOF
+fi
+[ -f "$config" ] && [ ! -L "$config" ] || { echo "$config must be a regular machine-local file." >&2; exit 1; }
+if ! fnox -c "$config" --no-daemon -P op-auth --no-defaults --if-missing error get OP_SERVICE_ACCOUNT_TOKEN >/dev/null 2>&1; then
+    echo 'Enter a 1Password service account token with read access to the dev vault.'
+    fnox -c "$config" --no-daemon -P op-auth set -p sync-age OP_SERVICE_ACCOUNT_TOKEN
+fi
+mise run secrets:sync
+'''
+
+[tasks."secrets:sync"]
+description = "Refresh age-encrypted 1Password caches and provision the Git signing key"
+run = '''
+set -eu
+umask 077
+unset OP_SERVICE_ACCOUNT_TOKEN FNOX_PROFILE FNOX_AGE_KEY FNOX_AGE_KEY_FILE
+config="$HOME/.config/fnox/config.toml"
+[ -f "$config" ] && [ ! -L "$config" ] || { echo 'Run `mise run secrets:init` first.' >&2; exit 1; }
+# The service account token is only exposed to these sync commands, never to shells.
+vault() {
+    fnox -c "$config" --no-daemon --non-interactive -P op-auth --no-defaults --if-missing error exec -- "$@"
+}
+vault fnox -c "$config" --no-daemon --non-interactive sync --provider sync-age --source op --global --force
+vault fnox -c "$config" --no-daemon --non-interactive -P git-signing --no-defaults sync GIT_SSH_SIGNING_KEY --provider sync-age --source op --global --force
+mkdir -p "$HOME/.ssh"
+chmod 700 "$HOME/.ssh"
+key="$HOME/.ssh/git-signing"
+if [ -e "$key" ] || [ -L "$key" ]; then
+    [ -f "$key" ] && [ ! -L "$key" ] || { echo 'Refusing non-regular Git signing key.' >&2; exit 1; }
+    echo 'Existing Git signing key retained; delete it to reprovision.'
+else
+    temporary=$(mktemp "$HOME/.ssh/.git-signing.XXXXXXXX")
+    trap 'rm -f "$temporary"' EXIT
+    fnox -c "$config" --no-daemon -P git-signing --no-defaults --if-missing error get GIT_SSH_SIGNING_KEY > "$temporary"
+    ssh-keygen -y -P '' -f "$temporary" >/dev/null
+    ln "$temporary" "$key"
+fi
+chmod 600 "$key"
+fnox -c "$config" --no-daemon check --all
+'''
