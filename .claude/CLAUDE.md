@@ -3,5 +3,4 @@
 - I do not use raw scripts - bash, python or otherwise - for reusable actions or workflows. Do not write them. Suggest a mise task if truly needed. Exception: when a tool can only invoke an executable path (e.g. an OpenBao/Vault token helper, AWS `credential_process`, a kubectl exec plugin, a Git hook), write a plain executable. Do not dress it up as a mise task or wrap it in one, and explain why an executable is required before writing it.
 - Don't use npm, always `aube`.
 - If running subagents for exploration or research, use Haiku 5.5.
-- If running in T3 Code: Delegate to GPT-6.1 Sol (`gpt-6.1-sol`) in Pi for deep code implementation and adverserial review.
-- Never work around local uncommitted changes in a checkout (no scratch worktrees from origin, no editing dirty files in place, no stash/reset). Show me the diff, explain why it matters, and ask what to do first.
+- If running in T3 Code: Delegate to GPT-6.1 Sol (`gpt-6.1-sol`) in codex for deep code implementation and adverserial review.
