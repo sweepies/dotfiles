@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# OpenBao CLI token helper: reuse ~/.vault-token, or sign in through the
+# browser when it is missing or rejected. ~/.bao points token_helper here;
+# bao invokes it with get/store/erase and passes the target address as BAO_ADDR.
+set -euo pipefail
+file="$HOME/.vault-token"
+umask 077
+
+case "${1:-}" in
+  get)
+    token=$(cat "$file" 2>/dev/null || true)
+    if [ -n "$token" ]; then
+      status=$(curl -s -o /dev/null -w '%{http_code}' -H "X-Vault-Token: $token" "$BAO_ADDR/v1/auth/token/lookup-self" || true)
+      # Only a rejected token triggers a sign-in; network or server errors
+      # surface from the real command instead.
+      case "$status" in
+        400|401|403) ;;
+        *) printf '%s' "$token"; exit 0 ;;
+      esac
+    fi
+    # The OIDC prompt goes to the terminal; bao captures this helper's stderr.
+    prompt=/dev/stderr
+    { : >/dev/tty; } 2>/dev/null && prompt=/dev/tty
+    token=$(bao login -method=oidc -no-store -token-only 2>"$prompt")
+    printf '%s' "$token" >"$file"
+    printf '%s' "$token"
+    ;;
+  store) cat >"$file" ;;
+  erase) rm -f "$file" ;;
+  *) echo "usage: token-helper get|store|erase" >&2; exit 2 ;;
+esac
