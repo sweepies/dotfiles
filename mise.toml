@@ -23,6 +23,7 @@ claude = "2.1.294"
 codex = "latest"
 yazi = "latest"
 "github:tldr-pages/tlrc" = "latest"
+awscli = { version = "latest", symlink_bins = "true" }
 
 [env]
 # mise pins Claude Code; its self-updater cannot write mise's install prefix.
