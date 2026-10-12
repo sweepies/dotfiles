@@ -1,6 +1,6 @@
 - Always use a hard cutover approach. Never leave code around for backward compatibility unless explicitly asked.
 - I manage everything with mise. Don't install things any other way.
-- I do not use raw scripts - bash, python or otherwise - for reusable actions or workflows. Do not write them. Suggest a mise task if truly needed.
+- I do not use raw scripts - bash, python or otherwise - for reusable actions or workflows. Do not write them. Suggest a mise task if truly needed. Exception: when a tool can only invoke an executable path (e.g. an OpenBao/Vault token helper, AWS `credential_process`, a kubectl exec plugin, a Git hook), write a plain executable. Do not dress it up as a mise task or wrap it in one, and explain why an executable is required before writing it.
 - Don't use npm, always `aube`.
 - If running subagents for exploration or research, use Haiku 5.5.
 - If running in T3 Code: Delegate complex coding work to GPT-6.1 Sol (`gpt-6.1-sol`) in Pi. Claude excels at managing and specifying, Sol is best for code. You may also choose Sol or Astra for adversarial review. The Claude and GPT model families compliment eachother well and fill in gaps - utilize this.
