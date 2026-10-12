@@ -18,7 +18,6 @@ aube = "latest"
 pi = "1.1.0"
 "fnox" = "latest"
 "npm:@upstash/box-cli" = "latest"
-entire = "latest"
 claude = "2.1.294"
 codex = "latest"
 yazi = "latest"
@@ -45,8 +44,6 @@ manifest = "git"
 # machine-local file that Git reads second (so it wins) and that `git config
 # --global` / `gh auth setup-git` write to, keeping this checkout clean.
 "~/.config/git/config" = { source = "~/dotfiles/.gitconfig", mode = "symlink" }
-# Keep this DIRECTORY symlinked: Entire refuses to replace hooks through it.
-"~/.config/git/hooks" = { source = "~/dotfiles/.config/git/hooks", mode = "symlink" }
 "~/.claude/CLAUDE.md" = { source = "~/dotfiles/.claude/CLAUDE.md", mode = "symlink" }
 # Merge only the shared keys: Pi writes machine-local keys (deviceId,
 # lastChangelogVersion) to the same file, and those must not be shared.
@@ -56,54 +53,14 @@ manifest = "git"
 # Link the directory so Pi can resolve the extension's adjacent helper module.
 "~/.pi/agent/extensions/t3-tool-discovery" = { source = "~/dotfiles/.pi/agent/extensions/t3-tool-discovery", mode = "symlink" }
 
-[tasks."entire:checkpoints"]
-description = "Route this enabled repository's Entire checkpoints to the private shared store"
-dir = "{{cwd}}"
-run = '''
-set -eu
-hooks=$(git rev-parse --path-format=absolute --git-common-dir)/hooks
-# The Git shell alias scopes config for Entire's child Git commands without
-# replacing the caller's GIT_CONFIG_COUNT / GIT_CONFIG_PARAMETERS environment.
-git -c core.hooksPath="$hooks" \
-  -c 'alias.entire-checkpoint-enroll=!entire configure --local --checkpoint-remote github:sweepies/entire-checkpoints' \
-  entire-checkpoint-enroll
-'''
-
-[tasks."entire:cli"]
-description = "Run Entire lifecycle commands without changing the shared Git hooks"
-dir = "{{cwd}}"
-run = '''
-set -eu
-hooks=$(git rev-parse --path-format=absolute --git-common-dir)/hooks
-git -c core.hooksPath="$hooks" -c 'alias.entire-local=!entire' entire-local "$@"
-'''
-
-[tasks."git:hooks:audit"]
-description = "Report local/worktree hook-path overrides and verify the global dispatcher"
-dir = "{{cwd}}"
-run = "python3 $HOME/.config/git/hooks/audit.py"
-
-[tasks."test:git-hooks"]
-description = "Test global Git dispatch and private checkpoint push enforcement"
-dir = "{{env.HOME}}/dotfiles"
-run = 'ENTIRE_TEST_BINARY="$(mise which entire)" MISE_TEST_BINARY="$(command -v mise)" PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s .config/git/tests -v'
-
-# Entire's uninstall follows a directory link and removes marked hook files.
-# Protect the shared entrypoints from that too. Remote-agent scopes its native
-# repo updater's writable window with a cleanup trap; manual pulls must unlock
-# first and reapply dotfiles afterward. Standalone repo commands run no hooks.
 # Git writes --global changes to the XDG file (this checkout) unless
 # ~/.gitconfig exists, so ensure it is a regular file. Removing the old managed
 # symlink into this checkout loses nothing; any other symlink is left alone.
 [bootstrap.hooks.post-dotfiles]
 run = '''
-chmod a-w "$HOME/dotfiles/.config/git/hooks"
 if [ -L "$HOME/.gitconfig" ] && [ "$HOME/.gitconfig" -ef "$HOME/dotfiles/.gitconfig" ]; then rm "$HOME/.gitconfig"; fi
 [ -e "$HOME/.gitconfig" ] || : > "$HOME/.gitconfig"
 '''
-
-[bootstrap.hooks.post-tools]
-run = 'mise exec -- python3 "$HOME/.config/git/hooks/audit.py"'
 
 [tasks."test:pi-prompt-cleanup"]
 description = "Test the local T3 prompt-deduplication extension"
