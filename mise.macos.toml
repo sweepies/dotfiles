@@ -21,6 +21,9 @@ fish = "activate"
 
 [dotfiles]
 "~/.config/mise/config.macos.toml" = { source = "~/dotfiles/mise.macos.toml", mode = "symlink" }
+# OpenBao CLI: sign in through the browser automatically when needed.
+"~/.config/bao/token-helper" = { source = "~/dotfiles/.config/bao/token-helper", mode = "symlink" }
+"~/.bao" = { source = "~/dotfiles/.config/bao/config.hcl", mode = "template" }
 
 [dotfiles."~/.config/fish/config.fish/integrations"]
 block = '''
